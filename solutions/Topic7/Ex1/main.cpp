@@ -104,8 +104,11 @@ typedef struct Student Student;
 /* ---------- | ---------- | ---------- */
 /* DECLARE FUNCTIONS HANDLE*/
 /*** Code at "DECLARE FUNCTION HANDLE BLOCK" ***/
+void printAStudent(Student obj);
 void fillArrayStudent(Student arrStudent[], int n);
 void printArrayStudent(Student arrStudent[], int n);
+int countAverage(Student arrStudent[], int n);
+Student maxAge(Student arrStudent[], int n);
 
 /* END DECLARE FUNCTIONS HANDLE */
 
@@ -124,6 +127,9 @@ void solve()
 
 	fillArrayStudent(arrStudent, n);
 	printArrayStudent(arrStudent, n);
+	printf("\nCount Avg Student: %d", countAverage(arrStudent, n));
+	printf("\nStudent have max age: ");
+	printAStudent(maxAge(arrStudent, n));
 	return;
 }
 /* END SOLVE */
@@ -149,9 +155,50 @@ int main()
 
 /* FUNCTIONS HELPER */
 /*** Declare at "DECLARE FUNCTION HELPER BLOCK" ***/
+int avgScore(Student obj)
+{
+	return (obj._mathScore + obj._physicalScore + obj._chemistryScore) / 3;
+}
 
+bool scoreNotPoor(Student obj)
+{
+	int score = 3;
+	return obj._mathScore >= score && obj._physicalScore >= score && obj._chemistryScore >= score;
+}
 /* END FUNTIONS HELPER */
-
+bool operator<(Date a, Date b)
+{
+	if (a._year < b._year)
+	{
+		return true;
+	}
+	else if (a._year == b._year)
+	{
+		if (a._month < b._month)
+		{
+			return true;
+		}
+		else if (a._month == b._month)
+		{
+			if (a._day < b._day)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
 /* ---------- | ---------- | ---------- */
 /* FUNCTIONS HANDLE */
 /*** Declare at "DECLARE FUNCTION HANDLE BLOCK" ***/
@@ -217,5 +264,31 @@ void printArrayStudent(Student arrStudent[], int n)
 		printf("\n\nInformation's student %d", i + 1);
 		printAStudent(arrStudent[i]);
 	}
+}
+
+int countAverage(Student arrStudent[], int n)
+{
+	int count = 0;
+	for (int i = 0; i < n; i++)
+	{
+		if (avgScore(arrStudent[i]) > 5 && scoreNotPoor(arrStudent[i]))
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+Student maxAge(Student arrStudent[], int n)
+{
+	Student max = arrStudent[0];
+	for (int i = 1; i < n; i++)
+	{
+		if (max._birthday < arrStudent[i]._birthday)
+		{
+			max = arrStudent[i];
+		}
+	}
+	return max;
 }
 /* END FUNTIONS HANDLE */
