@@ -66,6 +66,8 @@ using namespace std;
 /* ---------- | ---------- | ---------- */
 /* DECLARE FUNCTIONS HANDLE*/
 /*** Code at "DECLARE FUNCTION HANDLE BLOCK" ***/
+int recursion(int num);
+int loop(int num);
 
 /* END DECLARE FUNCTIONS HANDLE */
 
@@ -74,7 +76,16 @@ using namespace std;
 /* SOLVE */
 void solve()
 {
-	// Code Here
+	int n;
+	do
+	{
+		printf("Nhap N: ");
+		scanf("%d", &n);
+	} while (n <= 0);
+	int resultRecursion = recursion(n);
+	int resultLoop = loop(n);
+	printf("\nResult with recursion = %d", resultRecursion);
+	printf("\nResult with loop = %d", resultLoop);
 	return;
 }
 /* END SOLVE */
@@ -106,5 +117,27 @@ int main()
 /* ---------- | ---------- | ---------- */
 /* FUNCTIONS HANDLE */
 /*** Declare at "DECLARE FUNCTION HANDLE BLOCK" ***/
+int recursion(int num)
+{
+	int result = 0;
+	if (num == 1)
+	{
+		result = -1;
+	}
+	else
+	{
+		result = recursion(num - 1) + pow(-1, num) * (num);
+	}
+	return result;
+}
 
+int loop(int num)
+{
+	int result = 0;
+	for (int i = 1; i <= num; i++)
+	{
+		result += pow(-1, i) * i;
+	}
+	return result;
+}
 /* END FUNTIONS HANDLE */
