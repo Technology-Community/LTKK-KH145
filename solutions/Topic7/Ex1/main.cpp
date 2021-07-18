@@ -86,6 +86,12 @@ struct Student
 		_physicalScore = 0;
 		_chemistryScore = 0;
 	}
+	Student(float mathScore, float physicalScore, float chemistryScore)
+	{
+		_mathScore = mathScore;
+		_physicalScore = physicalScore;
+		_chemistryScore = chemistryScore;
+	}
 };
 typedef struct Student Student;
 /* END DECLARE STRUCT */
@@ -108,8 +114,9 @@ void printAStudent(Student obj);
 void fillArrayStudent(Student arrStudent[], int n);
 void printArrayStudent(Student arrStudent[], int n);
 int countAverage(Student arrStudent[], int n);
-Student maxAge(Student arrStudent[], int n);
-
+Student maxAgeInArr(Student arrStudent[], int n);
+Student maxAvgScoreInArr(Student arrStudent[], int n);
+void searchByName(Student arrStudent[], int n, char name[]);
 /* END DECLARE FUNCTIONS HANDLE */
 
 /* ---------- | ---------- | ---------- | ---------- | ---------- */
@@ -127,9 +134,22 @@ void solve()
 
 	fillArrayStudent(arrStudent, n);
 	printArrayStudent(arrStudent, n);
+
 	printf("\nCount Avg Student: %d", countAverage(arrStudent, n));
+
 	printf("\nStudent have max age: ");
-	printAStudent(maxAge(arrStudent, n));
+	printAStudent(maxAgeInArr(arrStudent, n));
+
+	printf("\nStudent have max avg score: ");
+	printAStudent(maxAvgScoreInArr(arrStudent, n));
+
+	fflush(stdin);
+	cin.ignore();
+	char searchName[MAX_NAME_LENGTH];
+	printf("\nFill search name: ");
+	fgets(searchName, MAX_NAME_LENGTH, stdin);
+	searchByName(arrStudent, n, searchName);
+
 	return;
 }
 /* END SOLVE */
@@ -155,7 +175,18 @@ int main()
 
 /* FUNCTIONS HELPER */
 /*** Declare at "DECLARE FUNCTION HELPER BLOCK" ***/
-int avgScore(Student obj)
+void removeNewLine(char *s)
+{
+	while (*s)
+	{
+		if (*s == '\n')
+		{
+			*s = '\0';
+		}
+		s++;
+	}
+}
+float avgScore(Student obj)
 {
 	return (obj._mathScore + obj._physicalScore + obj._chemistryScore) / 3;
 }
@@ -164,6 +195,18 @@ bool scoreNotPoor(Student obj)
 {
 	int score = 3;
 	return obj._mathScore >= score && obj._physicalScore >= score && obj._chemistryScore >= score;
+}
+
+Student greaterAvg(Student a, Student b)
+{
+	if (avgScore(a) > avgScore(b))
+	{
+		return a;
+	}
+	else
+	{
+		return b;
+	}
 }
 /* END FUNTIONS HELPER */
 bool operator<(Date a, Date b)
@@ -224,9 +267,11 @@ void fillAStudent(Student &obj)
 	printf("Fill ID: ");
 	// scanf("%s", &obj._id);
 	fgets(obj._id, MAX_ID_LENGTH, stdin);
+	removeNewLine(obj._id);
 	printf("Fill Name: ");
 	// scanf("%s", &obj._name);
 	fgets(obj._name, MAX_NAME_LENGTH, stdin);
+	removeNewLine(obj._name);
 	printf("Fill Birthday: ");
 	fillDate(obj._birthday);
 	printf("Fill Math Score: ");
@@ -239,13 +284,20 @@ void fillAStudent(Student &obj)
 
 void printAStudent(Student obj)
 {
-	printf("\nID = %s", obj._id);
-	printf("Name = %s", obj._name);
-	printf("Birthday = ");
-	printDate(obj._birthday);
-	printf("\nMath Score = %f", obj._mathScore);
-	printf("\nPhysical Score = %f", obj._physicalScore);
-	printf("\nChemistry Score = %f", obj._chemistryScore);
+	if (strcmp(obj._id, "") != 0)
+	{
+		printf("\nID = %s", obj._id);
+		printf("\nName = %s", obj._name);
+		printf("\nBirthday = ");
+		printDate(obj._birthday);
+		printf("\nMath Score = %.2f", obj._mathScore);
+		printf("\nPhysical Score = %.2f", obj._physicalScore);
+		printf("\nChemistry Score = %.2f", obj._chemistryScore);
+	}
+	else
+	{
+		printf("\nNo Information's Student");
+	}
 }
 
 void fillArrayStudent(Student arrStudent[], int n)
@@ -279,7 +331,7 @@ int countAverage(Student arrStudent[], int n)
 	return count;
 }
 
-Student maxAge(Student arrStudent[], int n)
+Student maxAgeInArr(Student arrStudent[], int n)
 {
 	Student max = arrStudent[0];
 	for (int i = 1; i < n; i++)
@@ -290,5 +342,29 @@ Student maxAge(Student arrStudent[], int n)
 		}
 	}
 	return max;
+}
+Student maxAvgScoreInArr(Student arrStudent[], int n)
+{
+	if (n == 1)
+	{
+		return arrStudent[0];
+	}
+	return greaterAvg(arrStudent[n - 1], maxAvgScoreInArr(arrStudent, n - 1));
+}
+void searchByName(Student arrStudent[], int n, char name[])
+{
+	bool flag = false;
+	for (int i = 0; i < n; i++)
+	{
+		if (strcmp(arrStudent[i]._name, name) == 0)
+		{
+			printAStudent(arrStudent[i]);
+			flag = true;
+		}
+	}
+	if (flag == false)
+	{
+		printf("\nDon't have information");
+	}
 }
 /* END FUNTIONS HANDLE */
