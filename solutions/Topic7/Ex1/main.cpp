@@ -1,4 +1,4 @@
-/* 4 */
+/*  Title Project */
 /*
 	Descriptions
 */
@@ -33,7 +33,9 @@ Author's informations:
 #define lfo pathio "output.txt", "w", stdout
 
 /** Macro definitions for maximum length of variables */
-
+#define MAX_ID_LENGTH 10
+#define MAX_NAME_LENGTH 30
+#define MAX_STUDENT_ARRAY 100
 /* END DEFINITIONS */
 
 /* ---------- | ---------- | ---------- */
@@ -49,7 +51,43 @@ using namespace std;
 
 /* ---------- | ---------- | ---------- */
 /* DECLARE STRUCT */
-
+struct Date
+{
+	int _day;
+	int _month;
+	int _year;
+	Date()
+	{
+		_day = 1;
+		_month = 1;
+		_year = 1;
+	}
+	Date(int day, int month, int year)
+	{
+		_day = day;
+		_month = month;
+		_year = year;
+	}
+};
+typedef struct Date Date;
+struct Student
+{
+	// char *_id = (char *)malloc(sizeof(char) * MAX_ID_LENGTH);
+	// char *_name = (char *)malloc(sizeof(char) * MAX_NAME_LENGTH);
+	char _id[MAX_ID_LENGTH];
+	char _name[MAX_NAME_LENGTH];
+	Date _birthday;
+	float _mathScore;
+	float _physicalScore;
+	float _chemistryScore;
+	Student()
+	{
+		_mathScore = 0;
+		_physicalScore = 0;
+		_chemistryScore = 0;
+	}
+};
+typedef struct Student Student;
 /* END DECLARE STRUCT */
 
 /* ---------- | ---------- | ---------- */
@@ -66,8 +104,8 @@ using namespace std;
 /* ---------- | ---------- | ---------- */
 /* DECLARE FUNCTIONS HANDLE*/
 /*** Code at "DECLARE FUNCTION HANDLE BLOCK" ***/
-int recursion(int num);
-int loop(int num);
+void fillArrayStudent(Student arrStudent[], int n);
+void printArrayStudent(Student arrStudent[], int n);
 
 /* END DECLARE FUNCTIONS HANDLE */
 
@@ -77,15 +115,15 @@ int loop(int num);
 void solve()
 {
 	int n;
+	Student arrStudent[MAX_STUDENT_ARRAY];
 	do
 	{
-		printf("Enter N: ");
+		printf("Enter N:");
 		scanf("%d", &n);
 	} while (n <= 0);
-	int resultRecursion = recursion(n);
-	int resultLoop = loop(n);
-	printf("\nResult with recursion = %d", resultRecursion);
-	printf("\nResult with loop = %d", resultLoop);
+
+	fillArrayStudent(arrStudent, n);
+	printArrayStudent(arrStudent, n);
 	return;
 }
 /* END SOLVE */
@@ -117,27 +155,67 @@ int main()
 /* ---------- | ---------- | ---------- */
 /* FUNCTIONS HANDLE */
 /*** Declare at "DECLARE FUNCTION HANDLE BLOCK" ***/
-int recursion(int num)
+void fillDate(Date &obj)
 {
-	int result = 0;
-	if (num == 1)
-	{
-		result = -1;
-	}
-	else
-	{
-		result = recursion(num - 1) + pow(-1, num) * (num);
-	}
-	return result;
+	printf("Fill Day: ");
+	scanf("%d", &obj._day);
+	printf("Fill Month: ");
+	scanf("%d", &obj._month);
+	printf("Fill Year: ");
+	scanf("%d", &obj._year);
 }
 
-int loop(int num)
+void printDate(Date obj)
 {
-	int result = 0;
-	for (int i = 1; i <= num; i++)
+	printf("%d / %d / %d", obj._day, obj._month, obj._year);
+}
+
+void fillAStudent(Student &obj)
+{
+	// fflush(stdin);
+	cin.ignore();
+	printf("Fill ID: ");
+	// scanf("%s", &obj._id);
+	fgets(obj._id, MAX_ID_LENGTH, stdin);
+	printf("Fill Name: ");
+	// scanf("%s", &obj._name);
+	fgets(obj._name, MAX_NAME_LENGTH, stdin);
+	printf("Fill Birthday: ");
+	fillDate(obj._birthday);
+	printf("Fill Math Score: ");
+	scanf("%f", &obj._mathScore);
+	printf("Fill Physical Score: ");
+	scanf("%f", &obj._physicalScore);
+	printf("Fill Chemistry Score: ");
+	scanf("%f", &obj._chemistryScore);
+}
+
+void printAStudent(Student obj)
+{
+	printf("\nID = %s", obj._id);
+	printf("Name = %s", obj._name);
+	printf("Birthday = ");
+	printDate(obj._birthday);
+	printf("\nMath Score = %f", obj._mathScore);
+	printf("\nPhysical Score = %f", obj._physicalScore);
+	printf("\nChemistry Score = %f", obj._chemistryScore);
+}
+
+void fillArrayStudent(Student arrStudent[], int n)
+{
+	for (int i = 0; i < n; i++)
 	{
-		result += pow(-1, i) * i;
+		printf("\nFill information's student %d", i + 1);
+		fillAStudent(arrStudent[i]);
 	}
-	return result;
+}
+
+void printArrayStudent(Student arrStudent[], int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		printf("\n\nInformation's student %d", i + 1);
+		printAStudent(arrStudent[i]);
+	}
 }
 /* END FUNTIONS HANDLE */

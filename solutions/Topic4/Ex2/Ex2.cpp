@@ -9,7 +9,7 @@ void solve()
 	int n;
 	do
 	{
-		printf("Nhap N: ");
+		printf("Enter N: ");
 		scanf("%d", &n);
 	} while (n <= 0);
 	int resultRecursion = recursion(n);
