@@ -33,7 +33,6 @@ Author's informations:
 #define lfo pathio "output.txt", "w", stdout
 
 /** Macro definitions for maximum length of variables */
-#define MAX_ID_LENGTH 10
 #define MAX_NAME_LENGTH 30
 #define MAX_STUDENT_ARRAY 100
 /* END DEFINITIONS */
@@ -72,9 +71,7 @@ struct Date
 typedef struct Date Date;
 struct Student
 {
-	// char *_id = (char *)malloc(sizeof(char) * MAX_ID_LENGTH);
-	// char *_name = (char *)malloc(sizeof(char) * MAX_NAME_LENGTH);
-	char _id[MAX_ID_LENGTH];
+	int _id;
 	char _name[MAX_NAME_LENGTH];
 	Date _birthday;
 	float _mathScore;
@@ -82,12 +79,14 @@ struct Student
 	float _chemistryScore;
 	Student()
 	{
+		_id = 0;
 		_mathScore = 0;
 		_physicalScore = 0;
 		_chemistryScore = 0;
 	}
-	Student(float mathScore, float physicalScore, float chemistryScore)
+	Student(int id, float mathScore, float physicalScore, float chemistryScore)
 	{
+		_id = id;
 		_mathScore = mathScore;
 		_physicalScore = physicalScore;
 		_chemistryScore = chemistryScore;
@@ -104,12 +103,14 @@ typedef struct Student Student;
 /* ---------- | ---------- | ---------- */
 /* DECLARE FUNCTIONS HELPER */
 /*** Code at "DECLARE FUNCTION HELPER BLOCK" ***/
+void removeNewLine(char *s);
 
 /* END DECLARE FUNCTIONS HELPER */
 
 /* ---------- | ---------- | ---------- */
 /* DECLARE FUNCTIONS HANDLE*/
 /*** Code at "DECLARE FUNCTION HANDLE BLOCK" ***/
+void fillAStudent(Student &obj);
 void printAStudent(Student obj);
 void fillArrayStudent(Student arrStudent[], int n);
 void printArrayStudent(Student arrStudent[], int n);
@@ -117,6 +118,9 @@ int countAverage(Student arrStudent[], int n);
 Student maxAgeInArr(Student arrStudent[], int n);
 Student maxAvgScoreInArr(Student arrStudent[], int n);
 void searchByName(Student arrStudent[], int n, char name[]);
+void insertionSort(Student arrStudent[], int n);
+void insertNewStudent(Student arrStudent[], int &n, Student newStudent);
+
 /* END DECLARE FUNCTIONS HANDLE */
 
 /* ---------- | ---------- | ---------- | ---------- | ---------- */
@@ -135,20 +139,38 @@ void solve()
 	fillArrayStudent(arrStudent, n);
 	printArrayStudent(arrStudent, n);
 
+	printf("\n\t-----\t\n");
 	printf("\nCount Avg Student: %d", countAverage(arrStudent, n));
 
+	printf("\n\t-----\t\n");
 	printf("\nStudent have max age: ");
 	printAStudent(maxAgeInArr(arrStudent, n));
 
+	printf("\n\t-----\t\n");
 	printf("\nStudent have max avg score: ");
 	printAStudent(maxAvgScoreInArr(arrStudent, n));
 
+	printf("\n\t-----\t\n");
 	fflush(stdin);
 	cin.ignore();
 	char searchName[MAX_NAME_LENGTH];
 	printf("\nFill search name: ");
 	fgets(searchName, MAX_NAME_LENGTH, stdin);
+	removeNewLine(searchName);
 	searchByName(arrStudent, n, searchName);
+
+	printf("\n\t-----\t\n");
+	insertionSort(arrStudent, n);
+	printf("\nAfter Sort: ");
+	printArrayStudent(arrStudent, n);
+
+	printf("\n\t-----\t\n");
+	Student newStudent;
+	printf("\nFill informations's student: ");
+	fillAStudent(newStudent);
+	insertNewStudent(arrStudent, n, newStudent);
+	printf("\nAfter insert: ");
+	printArrayStudent(arrStudent, n);
 
 	return;
 }
@@ -186,6 +208,7 @@ void removeNewLine(char *s)
 		s++;
 	}
 }
+
 float avgScore(Student obj)
 {
 	return (obj._mathScore + obj._physicalScore + obj._chemistryScore) / 3;
@@ -208,22 +231,42 @@ Student greaterAvg(Student a, Student b)
 		return b;
 	}
 }
+
+int getPositionInsert(Student arrStudent[], int n, Student newStudent)
+{
+	for (int i = 0; i < n; i++)
+	{
+		if (avgScore(newStudent) < avgScore(arrStudent[i]))
+		{
+			return i;
+		}
+	}
+	return n;
+}
+
+void insertToArrByPosition(Student arrStudent[], int &n, int pos, Student x)
+{
+	n++;
+	for (int i = n - 1; i >= pos; i--)
+		arrStudent[i] = arrStudent[i - 1];
+	arrStudent[pos - 1] = x;
+}
 /* END FUNTIONS HELPER */
 bool operator<(Date a, Date b)
 {
-	if (a._year < b._year)
+	if (a._year > b._year)
 	{
 		return true;
 	}
 	else if (a._year == b._year)
 	{
-		if (a._month < b._month)
+		if (a._month > b._month)
 		{
 			return true;
 		}
 		else if (a._month == b._month)
 		{
-			if (a._day < b._day)
+			if (a._day > b._day)
 			{
 				return true;
 			}
@@ -262,13 +305,11 @@ void printDate(Date obj)
 
 void fillAStudent(Student &obj)
 {
-	// fflush(stdin);
-	cin.ignore();
 	printf("Fill ID: ");
-	// scanf("%s", &obj._id);
-	fgets(obj._id, MAX_ID_LENGTH, stdin);
-	removeNewLine(obj._id);
+	scanf("%d", &obj._id);
 	printf("Fill Name: ");
+	fflush(stdin);
+	cin.ignore();
 	// scanf("%s", &obj._name);
 	fgets(obj._name, MAX_NAME_LENGTH, stdin);
 	removeNewLine(obj._name);
@@ -284,9 +325,9 @@ void fillAStudent(Student &obj)
 
 void printAStudent(Student obj)
 {
-	if (strcmp(obj._id, "") != 0)
+	if (obj._id != 0)
 	{
-		printf("\nID = %s", obj._id);
+		printf("\nID = %d", obj._id);
 		printf("\nName = %s", obj._name);
 		printf("\nBirthday = ");
 		printDate(obj._birthday);
@@ -366,5 +407,32 @@ void searchByName(Student arrStudent[], int n, char name[])
 	{
 		printf("\nDon't have information");
 	}
+}
+void insertionSort(Student arrStudent[], int n)
+{
+	Student key;
+	int i, j;
+	for (i = 1; i < n; i++)
+	{
+		key = arrStudent[i];
+		j = i - 1;
+
+		/* Move elements of arr[0..i-1], that are
+          greater than key, to one position ahead
+          of their current position */
+		while (j >= 0 && avgScore(arrStudent[j]) > avgScore(key))
+		{
+			arrStudent[j + 1] = arrStudent[j];
+			j = j - 1;
+		}
+		arrStudent[j + 1] = key;
+	}
+}
+
+void insertNewStudent(Student arrStudent[], int &n, Student newStudent)
+{
+	printAStudent(newStudent);
+	int pos = getPositionInsert(arrStudent, n, newStudent);
+	insertToArrByPosition(arrStudent, n, pos + 1, newStudent);
 }
 /* END FUNTIONS HANDLE */
